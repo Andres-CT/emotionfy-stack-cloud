@@ -1,0 +1,56 @@
+version: "3"
+services:
+  # REDIS: 6379
+  redis:
+    #image: redis
+    container_name: redis
+    build:
+      context: ./redis
+      dockerfile: Dockerfile
+  # PYTHON: 8000
+  pyapi:
+    #image: gcr.io/emotionfy-279507/pyapi
+    container_name: pyapi
+    build:
+      context: ./pyapi
+      dockerfile: Dockerfile
+  # EXPRESS: 5000
+  api:
+    #image: gcr.io/emotionfy-279507/api:latest
+    container_name: api
+    env_file: ./api/.env
+    build:
+      context: ./api/backend
+      dockerfile: Dockerfile.dev
+    volumes:
+      - /app/node_modules
+    depends_on:
+      - redis
+      - pyapi
+
+  # CLIENT: 3000
+  client:
+    #image: gcr.io/emotionfy-279507/emotionfy:dev
+    container_name: emotionfy
+    env_file: ./emotionfy/.env
+    build:
+      context: ./emotionfy
+      dockerfile: Dockerfile.dev
+    volumes: 
+      - /app/node_modules
+    stdin_open: true
+    depends_on: 
+      - api
+
+  # NGINX
+  nginx:
+    #image: gcr.io/emotionfy-279507/nginx:latest
+    container_name: nginx
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile.dev
+    restart: always
+    ports:
+      - 3050:80
+    depends_on:
+      - client

@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: emotionfy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: emotionfy
+  template:
+    metadata:
+      labels:
+        app: emotionfy
+    spec:
+      imagePullSecrets:
+        - name: gcr
+      containers:
+      - name: emotionfy
+        image: gcr.io/emotionfy-279507/emotionfy
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 3000

@@ -1,0 +1,17 @@
+FROM node
+
+WORKDIR /app
+
+RUN apt-get update
+RUN apt-get install ffmpeg -y
+
+COPY package.json ./
+
+RUN npm install yarn
+RUN rm package-lock.json
+RUN yarn
+
+COPY ./ ./
+
+EXPOSE 5000
+CMD [ "yarn", "start" ]
